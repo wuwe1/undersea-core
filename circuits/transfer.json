@@ -1,0 +1,10 @@
+{
+  "hashValue": "0x2778f900758cc46e051040641348de3dacc6d2a31e2963f22cbbfb8f65464241",
+  "hashSenderBalanceBefore": "0x21f6c93b8b701f3c96744fcc5e4d99d95fdbaffe3068c0f1dbfdf753df34a56c",
+  "hashSenderBalanceAfter": "0x22d0ae462961c4cc15b7a368970afc115a29563a262963d28bf52035f73f2f7f",
+  "hashReceiverBalanceBefore": "0x22d0ae462961c4cc15b7a368970afc115a29563a262963d28bf52035f73f2f7f",
+  "hashReceiverBalanceAfter": "0x21f6c93b8b701f3c96744fcc5e4d99d95fdbaffe3068c0f1dbfdf753df34a56c",
+  "senderBalanceBefore": "120",
+  "receiverBalanceBefore": "110",
+  "value": "10"
+}
