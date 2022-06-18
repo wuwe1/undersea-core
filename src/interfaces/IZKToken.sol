@@ -29,6 +29,15 @@ interface IZKToken {
         Proof calldata proof
     ) external;
 
+    function transferFrom(
+        uint256 hashValue,
+        uint256 hashSenderBalanceAfter,
+        uint256 hashReceiverBalanceAfter,
+        address from,
+        address to,
+        Proof calldata proof
+    ) external;
+
     function deposit(uint256 hashBalanceAfter, Proof calldata proof)
         external
         payable;

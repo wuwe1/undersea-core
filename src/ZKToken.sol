@@ -30,14 +30,14 @@ contract ZKToken is IZKToken {
     }
 
     /**
-     * @dev Move secret amount of token from the caller's account to `to`
+     * @notice Move secret amount of token from the caller's account to `to`
      *
      * @param hashValue               Poseidon hash of transfer amount
      * @param hashSenderBalanceAfter  Poseidon hash of sender balance after
      *                                transaction
      * @param hashSenderBalanceAfter  Poseidon hash of receiver balance after
      *                                transaction
-     * @param to                      Address of recipient
+     * @param to                      Address of receiver
      */
     function transfer(
         uint256 hashValue,
@@ -46,12 +46,59 @@ contract ZKToken is IZKToken {
         address to,
         Proof calldata proof
     ) external override {
-        if (to == address(0)) {
+        _transfer(
+            hashValue,
+            hashSenderBalanceAfter,
+            hashReceiverBalanceAfter,
+            msg.sender,
+            to,
+            proof
+        );
+    }
+
+    /**
+     * @notice Move secret amount of token from `from` to `to`
+     *
+     * @param hashValue               Poseidon hash of transfer amount
+     * @param hashSenderBalanceAfter  Poseidon hash of sender balance after
+     *                                transaction
+     * @param hashSenderBalanceAfter  Poseidon hash of receiver balance after
+     *                                transaction
+     * @param from                    Address of sender
+     * @param to                      Address of receiver
+     */
+    function transferFrom(
+        uint256 hashValue,
+        uint256 hashSenderBalanceAfter,
+        uint256 hashReceiverBalanceAfter,
+        address from,
+        address to,
+        Proof calldata proof
+    ) external override {
+        _transfer(
+            hashValue,
+            hashSenderBalanceAfter,
+            hashReceiverBalanceAfter,
+            from,
+            to,
+            proof
+        );
+    }
+
+    function _transfer(
+        uint256 hashValue,
+        uint256 hashSenderBalanceAfter,
+        uint256 hashReceiverBalanceAfter,
+        address from,
+        address to,
+        Proof calldata proof
+    ) internal {
+        if (to == address(0) || from == address(0)) {
             revert ZeroAddress();
         }
         uint256[5] memory input;
         input[0] = hashValue;
-        input[1] = balanceHashes[msg.sender];
+        input[1] = balanceHashes[from];
         input[2] = hashSenderBalanceAfter;
         input[3] = balanceHashes[to];
         input[4] = hashReceiverBalanceAfter;
@@ -60,13 +107,13 @@ contract ZKToken is IZKToken {
             revert InvalidTransferProof();
         }
 
-        balanceHashes[msg.sender] = hashSenderBalanceAfter;
+        balanceHashes[from] = hashSenderBalanceAfter;
         balanceHashes[to] = hashReceiverBalanceAfter;
-        emit Transfer(msg.sender, to, hashValue);
+        emit Transfer(from, to, hashValue);
     }
 
     /**
-     * @dev Deposit ETH to get ZKToken
+     * @notice Deposit ETH to get ZKToken
      *
      * @param hashBalanceAfter  Poseidon hash of caller's balance after
      *                          transaction
@@ -89,7 +136,7 @@ contract ZKToken is IZKToken {
     }
 
     /**
-     * @dev Withdraw ETH by burning ZKToken
+     * @notice Withdraw ETH by burning ZKToken
      *
      * @param amount            Amount of ETH to be withdrawn
      *
