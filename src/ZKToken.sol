@@ -29,13 +29,26 @@ contract ZKToken is IZKToken {
         burnVerifier = IBurnVerifier(_burnVerifier);
     }
 
+    /**
+     * @dev Move secret amount of token from the caller's account to `to`
+     *
+     * @param hashValue               Poseidon hash of transfer amount
+     * @param hashSenderBalanceAfter  Poseidon hash of sender balance after
+     *                                transaction
+     * @param hashSenderBalanceAfter  Poseidon hash of receiver balance after
+     *                                transaction
+     * @param to                      Address of recipient
+     */
     function transfer(
         uint256 hashValue,
         uint256 hashSenderBalanceAfter,
         uint256 hashReceiverBalanceAfter,
         address to,
         Proof calldata proof
-    ) external {
+    ) external override {
+        if (to == address(0)) {
+            revert ZeroAddress();
+        }
         uint256[5] memory input;
         input[0] = hashValue;
         input[1] = balanceHashes[msg.sender];
@@ -52,9 +65,17 @@ contract ZKToken is IZKToken {
         emit Transfer(msg.sender, to, hashValue);
     }
 
+    /**
+     * @dev Deposit ETH to get ZKToken
+     *
+     * @param hashBalanceAfter  Poseidon hash of caller's balance after
+     *                          transaction
+     * @param proof             SNARK proof
+     */
     function deposit(uint256 hashBalanceAfter, Proof calldata proof)
         external
         payable
+        override
     {
         uint256[2] memory input;
         input[0] = msg.value;
@@ -67,11 +88,20 @@ contract ZKToken is IZKToken {
         emit Deposit(msg.sender, msg.value);
     }
 
+    /**
+     * @dev Withdraw ETH by burning ZKToken
+     *
+     * @param amount            Amount of ETH to be withdrawn
+     *
+     * @param hashBalanceAfter  Poseidon hash of caller's balance after
+     *                          transaction
+     * @param proof             SNARK proof
+     */
     function withdraw(
         uint256 amount,
         uint256 hashBalanceAfter,
         Proof calldata proof
-    ) external {
+    ) external override {
         uint256[2] memory input;
         input[0] = amount;
         input[1] = hashBalanceAfter;

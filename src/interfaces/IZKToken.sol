@@ -12,6 +12,7 @@ interface IZKToken {
     event Withdraw(address who, uint256 amount);
     event Transfer(address from, address to, uint256 hashValue);
 
+    error ZeroAddress();
     error InvalidTransferProof();
     error InvalidMintProof();
     error InvalidBurnProof();
@@ -19,4 +20,22 @@ interface IZKToken {
     function name() external returns (string memory);
 
     function symbol() external returns (string memory);
+
+    function transfer(
+        uint256 hashValue,
+        uint256 hashSenderBalanceAfter,
+        uint256 hashReceiverBalanceAfter,
+        address to,
+        Proof calldata proof
+    ) external;
+
+    function deposit(uint256 hashBalanceAfter, Proof calldata proof)
+        external
+        payable;
+
+    function withdraw(
+        uint256 amount,
+        uint256 hashBalanceAfter,
+        Proof calldata proof
+    ) external;
 }
