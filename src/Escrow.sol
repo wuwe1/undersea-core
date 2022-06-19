@@ -3,6 +3,8 @@ pragma solidity 0.8.10;
 
 import {IEscrow} from "./interfaces/IEscrow.sol";
 import {IZKToken} from "./interfaces/IZKToken.sol";
+import {IERC20} from "./interfaces/IERC20.sol";
+import {IERC721} from "./interfaces/IERC721.sol";
 
 contract Escrow is IEscrow {
     uint256 public orderIndex = 1;
