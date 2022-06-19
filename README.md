@@ -1,6 +1,6 @@
 # UnderSea Core 
 
-**UnderSea is a privacy-preserved NFT marketplace**. You can trade ERC20/ERC721 without revealing how much you paid/received.
+**UnderSea is a privacy-preserving NFT marketplace**. You can trade ERC20/ERC721 without revealing how much you paid/received.
 
 ## Install
 
