@@ -17,6 +17,9 @@ contract Escrow is IEscrow {
         OfferItem[] calldata _offer,
         Consideration calldata _consideration
     ) external returns (uint256) {
+        if (!_isValidOffer(_offer)) {
+            revert InvalidOffer();
+        }
         Order memory order = Order({
             offerer: msg.sender,
             offer: _offer,
@@ -70,6 +73,39 @@ contract Escrow is IEscrow {
             order.consideration.recipient,
             params.proof
         );
+    }
+
+    function _isValidOffer(OfferItem[] memory offer) returns (bool) {
+        uint256 offerLength = offer.length;
+        for (uint256 i = 0; i < offerLength; ) {
+            if (offer[i].itemType == ItemType.ERC20) {
+                if (
+                    IERC20(offer[i].token).balanceOf(msg.sender) <
+                    offer[i].amountOrIdentifier
+                ) {
+                    revert OrderCreatorERC20NotEnough(
+                        offer[i].token,
+                        msg.sender,
+                        offer[i].amountOrIdentifier
+                    );
+                }
+            } else {
+                if (
+                    IERC721(offer[i].token).ownerOf(
+                        offer[i].amountOrIdentifier
+                    ) != msg.sender
+                ) {
+                    revert OrderCreatorIsNotOwner(
+                        offer[i].token,
+                        msg.sender,
+                        offer[i].amountOrIdentifier
+                    );
+                }
+            }
+            unchecked {
+                ++i;
+            }
+        }
     }
 
     function _transferERC20OrERC721(

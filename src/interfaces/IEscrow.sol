@@ -37,8 +37,11 @@ interface IEscrow {
     }
 
     error InvalidCanceller();
+    error InvalidOffer();
     error OrderIsCancelled();
     error NoContract(address);
+    error OrderCreatorERC20NotEnough(address, address, uint256);
+    error OrderCreatorIsNotOwner(address, address, uint256);
     error TokenTransferGenericFailure(address, address, address, uint256);
 
     event OrderCreated(uint256, address, Order);
