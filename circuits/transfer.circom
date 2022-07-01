@@ -3,19 +3,24 @@ include "../node_modules/circomlib/circuits/poseidon.circom";
 include "../node_modules/circomlib/circuits/comparators.circom";
 
 template Main() {
+  // public
   signal input hashValue;
   signal input hashSenderBalanceBefore;
   signal input hashSenderBalanceAfter;
   signal input hashReceiverBalanceBefore;
   signal input hashReceiverBalanceAfter;
 
+  //private
   signal input senderBalanceBefore;
   signal input receiverBalanceBefore;
   signal input value;
 
+  //intermediate signal
   signal senderBalanceAfter;
   signal receiverBalanceAfter;
 
+  // <-- => assignment
+  // === => contraint
   senderBalanceAfter <== senderBalanceBefore - value;
   receiverBalanceAfter <== receiverBalanceBefore + value;
 

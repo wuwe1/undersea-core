@@ -5,9 +5,9 @@
   "author": "wuwe1 <wu_we1@outlook.com>",
   "license": "MIT",
   "devDependencies": {
-    "circomlib": "^2.0.4",
+    "circomlib": "^2.0.5",
     "hardhat": "^2.9.9",
-    "hardhat-circom": "^3.2.2"
+    "hardhat-circom": "^3.3.0"
   },
   "scripts": {
     "circom:dev": "hardhat circom --deterministic --debug --verbose",
