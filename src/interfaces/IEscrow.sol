@@ -22,7 +22,7 @@ interface IEscrow {
 
     struct Order {
         address offerer;
-        OfferItem[] offer;
+        OfferItem offer;
         Consideration consideration;
     }
 
@@ -49,11 +49,11 @@ interface IEscrow {
     event OrderFulfilled(uint256);
 
     function createOrder(
-        OfferItem[] calldata _offer,
+        OfferItem calldata _offer,
         Consideration calldata _consideration
-    ) external;
+    ) external returns (uint256);
 
     function cancelOrder(uint256 orderId) external;
 
-    function fulfillOrder(uint256 orderId, address offerRecipient) external
+    function fulfillOrder(FulfilOrderParameters calldata params) external;
 }

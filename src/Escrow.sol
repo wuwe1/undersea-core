@@ -16,12 +16,10 @@ contract Escrow is IEscrow {
     }
 
     function createOrder(
-        OfferItem[] calldata _offer,
+        OfferItem calldata _offer,
         Consideration calldata _consideration
     ) external returns (uint256) {
-        if (!_isValidOffer(_offer)) {
-            revert InvalidOffer();
-        }
+        _isValidOffer(_offer);
         Order memory order = Order({
             offerer: msg.sender,
             offer: _offer,
@@ -48,24 +46,17 @@ contract Escrow is IEscrow {
         emit OrderCanceled(orderId);
     }
 
-    function fulfillOrder(FulfilOrderParameters params) external {
+    function fulfillOrder(FulfilOrderParameters calldata params) external {
         Order memory order = getOrder[params.orderId];
         if (order.offerer == address(0)) {
             revert OrderIsCancelled();
         }
-        uint256 offerLength = order.offer.length;
-        address offerer = order.offerer;
-        for (uint256 i = 0; i < offerLength; ) {
-            _transferERC20OrERC721(
-                order.offer[i].token,
-                offerer,
-                offerRecipient,
-                order.offer[i].amountOrIdentifier
-            );
-            unchecked {
-                ++i;
-            }
-        }
+        _transferERC20OrERC721(
+            order.offer.token,
+            order.offerer,
+            params.offerRecipient,
+            order.offer.amountOrIdentifier
+        );
 
         zkToken.transferFrom(
             params.hashValue,
@@ -77,35 +68,28 @@ contract Escrow is IEscrow {
         );
     }
 
-    function _isValidOffer(OfferItem[] memory offer) returns (bool) {
-        uint256 offerLength = offer.length;
-        for (uint256 i = 0; i < offerLength; ) {
-            if (offer[i].itemType == ItemType.ERC20) {
-                if (
-                    IERC20(offer[i].token).balanceOf(msg.sender) <
-                    offer[i].amountOrIdentifier
-                ) {
-                    revert OrderCreatorERC20NotEnough(
-                        offer[i].token,
-                        msg.sender,
-                        offer[i].amountOrIdentifier
-                    );
-                }
-            } else {
-                if (
-                    IERC721(offer[i].token).ownerOf(
-                        offer[i].amountOrIdentifier
-                    ) != msg.sender
-                ) {
-                    revert OrderCreatorIsNotOwner(
-                        offer[i].token,
-                        msg.sender,
-                        offer[i].amountOrIdentifier
-                    );
-                }
+    function _isValidOffer(OfferItem memory offer) internal view {
+        if (offer.itemType == ItemType.ERC20) {
+            if (
+                IERC20(offer.token).balanceOf(msg.sender) <
+                offer.amountOrIdentifier
+            ) {
+                revert OrderCreatorERC20NotEnough(
+                    offer.token,
+                    msg.sender,
+                    offer.amountOrIdentifier
+                );
             }
-            unchecked {
-                ++i;
+        } else {
+            if (
+                IERC721(offer.token).ownerOf(offer.amountOrIdentifier) !=
+                msg.sender
+            ) {
+                revert OrderCreatorIsNotOwner(
+                    offer.token,
+                    msg.sender,
+                    offer.amountOrIdentifier
+                );
             }
         }
     }

@@ -2,7 +2,7 @@
 pragma solidity 0.8.10;
 
 import {ITransferVerifier, IMintVerifier, IBurnVerifier} from "./interfaces/Verifier.sol";
-import {IZKToken} from "./interfaces/IZKToken.sol";
+import {IZKToken, Proof} from "./interfaces/IZKToken.sol";
 
 contract ZKToken is IZKToken {
     string public name;
